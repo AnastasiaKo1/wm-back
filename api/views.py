@@ -18,3 +18,19 @@ class Articles(APIView):
 def categories(request):
     categories = Category.objects.all()
     return JsonResponse(CategorySerializer(categories, many=True).data, safe=False)
+
+@api_view(['POST'])
+def create_article(request):
+    try:
+        category = Category.objects.get(name=request.data.get('category'))
+    except:
+        category = Category.objects.create(name=request.data.get('category'))
+        
+    article = Article.objects.create(
+        category = category,
+        title = request.data.get('title'),
+        image = request.data.get('image'),
+        text = request.data.get('text')
+    )
+    return JsonResponse(ArticleSerializer(article).data, safe=False)
+
